@@ -29,7 +29,7 @@ fun WebViewScreen(url: String) {
             WebView(context).apply {
                 webViewClient = WebViewClient()
                 settings.javaScriptEnabled = true
-//                settings.userAgentString = "WebViewTester/1.0"
+                settings.userAgentString = "MyWebViewTester/1.0"
                 loadUrl(url)
             }
         },
