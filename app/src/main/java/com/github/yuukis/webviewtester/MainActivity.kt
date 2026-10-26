@@ -1,6 +1,7 @@
 package com.github.yuukis.webviewtester
 
 import android.os.Bundle
+import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
@@ -16,23 +17,39 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             WebViewTesterTheme {
-                WebViewScreen("https://www.ugtop.com/spill.shtml")
+                WebViewScreen(
+                    url = "https://yuukis.github.io/test_blanktitle4.html",
+                    modifier = Modifier.fillMaxSize(),
+                    onTitleChanged = { title ->
+                        this@MainActivity.title =
+                            title.takeUnless { it.isBlank() } ?: getString(R.string.app_name)
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun WebViewScreen(url: String) {
+fun WebViewScreen(
+    url: String,
+    modifier: Modifier = Modifier,
+    onTitleChanged: (String) -> Unit = {}
+) {
     AndroidView(
         factory = { context ->
             WebView(context).apply {
                 webViewClient = WebViewClient()
+                webChromeClient = object : WebChromeClient() {
+                    override fun onReceivedTitle(view: WebView?, title: String?) {
+                        title?.let(onTitleChanged)
+                    }
+                }
                 settings.javaScriptEnabled = true
-                settings.userAgentString = "MyWebViewTester/1.0"
+//                settings.userAgentString = "MyWebViewTester/1.0"
                 loadUrl(url)
             }
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier
     )
 }
